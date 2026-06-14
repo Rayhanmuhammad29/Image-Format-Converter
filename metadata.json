@@ -1,0 +1,6 @@
+{
+  "name": "Image Format Converter",
+  "description": "Batch client-side image converter supporting WEBP, PNG, JPG, SVG, and EPS formats.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
