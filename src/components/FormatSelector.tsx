@@ -24,52 +24,52 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
     {
       id: 'png',
       label: 'PNG',
-      tag: 'Raster / Lossless',
-      desc: 'Preserves full transparency and crisp graphic details.',
+      tag: 'Raster / Tanpa Kompresi',
+      desc: 'Mempertahankan transparansi penuh dan detail grafis yang tajam.',
       color: 'text-cyan-400',
       bg: 'bg-white/10',
       border: 'border-cyan-400/40',
-      detail: 'Portable Network Graphics - optimal for icons, UI shots and designs.'
+      detail: 'Portable Network Graphics - optimal untuk ikon, tangkapan layar UI, dan desain grafis.'
     },
     {
       id: 'jpeg',
       label: 'JPG',
-      tag: 'Raster / Standard',
-      desc: 'Lossy, optimized file sizes for photographs & clean web load.',
+      tag: 'Raster / Standar',
+      desc: 'Ukuran file optimal untuk foto & pemuatan halaman web yang cepat.',
       color: 'text-blue-305',
       bg: 'bg-white/10',
       border: 'border-blue-400/40',
-      detail: 'Joint Photographic Experts Group - standard file sharing.'
+      detail: 'Joint Photographic Experts Group - standar file untuk membagikan foto atau gambar web.'
     },
     {
       id: 'webp',
       label: 'WEBP',
-      tag: 'Raster / Next-Gen',
-      desc: 'Highly advanced web optimization with high compression ratio.',
+      tag: 'Raster / Generasi Baru',
+      desc: 'Optimasi web canggih dengan rasio kompresi tinggi & hemat bandwidth.',
       color: 'text-emerald-300',
       bg: 'bg-white/10',
       border: 'border-emerald-400/40',
-      detail: 'Google Next-Gen Format - 30% smaller than JPG with transparent support.'
+      detail: 'Format Google Generasi Baru - sekitar 35% lebih kecil dibanding JPG dengan dukungan transparansi.'
     },
     {
       id: 'svg',
       label: 'SVG',
-      tag: 'Vector / XML Stencil',
-      desc: 'Converts bitmaps into interactive browser vector paths.',
+      tag: 'Vektor / Pola XML',
+      desc: 'Mengonversi piksel bitmap menjadi jalur vektor browser yang tajam & interaktif.',
       color: 'text-purple-400',
       bg: 'bg-white/10',
       border: 'border-purple-400/40',
-      detail: 'Scalable Vector Graphics - unlimited scalability, fully editable in illustrator.'
+      detail: 'Scalable Vector Graphics - ukuran tidak terbatas jika diperbesar (tidak pecah) & dapat diedit di Illustrator.'
     },
     {
       id: 'eps',
       label: 'EPS',
-      tag: 'Vector / PostScript',
-      desc: 'Encapsulated PostScript vector output for high-res printing.',
+      tag: 'Vektor / PostScript',
+      desc: 'Output vektor Encapsulated PostScript khusus untuk cetak cetakan besar.',
       color: 'text-violet-305',
       bg: 'bg-white/10',
       border: 'border-violet-400/40',
-      detail: 'Encapsulated PostScript - legacy/distribution graphic print layouts.'
+      detail: 'Encapsulated PostScript - standar distribusi layout grafis percetakan profesional.'
     }
   ];
 
@@ -85,14 +85,14 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
         <div>
           <h4 className="font-sans font-bold text-white tracking-tight flex items-center gap-2 text-base">
             <Workflow className="w-5 h-5 text-cyan-400" />
-            Target Conversion Format
+            Format Konversi Target
           </h4>
           <p className="text-xs text-gray-400 mt-1">
-            Choose output structure. Converting to vector triggers the tracing engine.
+            Pilih struktur output. Mengonversi ke vektor otomatis mengaktifkan mesin penelusuran bentuk (tracing).
           </p>
         </div>
         <span className="font-mono text-[10px] tracking-wider text-cyan-300 bg-white/10 border border-white/10 px-3 py-1 rounded-full font-semibold uppercase">
-          {selectedFormat.toUpperCase()} Mode Active
+          Mode {selectedFormat.toUpperCase()} Aktif
         </span>
       </div>
 
@@ -112,10 +112,10 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
             <div className="relative w-14 h-14 rounded-2xl bg-white/5 border-2 border-white/20 flex items-center justify-center text-white shadow-xl">
               <FileImage className="w-7 h-7 text-cyan-400" />
               <div className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-cyan-500 flex items-center justify-center text-[8px] font-sans font-bold text-white shadow-md">
-                IN
+                MASUK
               </div>
             </div>
-            <span className="text-[10px] font-mono text-gray-400 mt-2 font-medium">BITMAP SOURCE</span>
+            <span className="text-[10px] font-mono text-gray-400 mt-2 font-medium">SUMBER BITMAP</span>
           </div>
 
           {/* Connected Dynamic Glowing Arrow system */}
@@ -135,7 +135,7 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 shadow-[0_0_15px_rgba(34,211,238,0.25)] select-none">
                 <Cpu className={`w-3.5 h-3.5 text-cyan-400 ${selectedFormat === 'svg' || selectedFormat === 'eps' ? 'animate-spin [animation-duration:12s]' : ''}`} />
                 <span className="text-[9px] font-mono font-black text-cyan-300 tracking-wider">
-                  {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'VECTOR TRACER' : 'RE-INDEXER'}
+                  {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'PELACAK VEKTOR' : 'PENGINDEKS ULANG'}
                 </span>
               </div>
 
@@ -149,7 +149,7 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
               <div className="absolute right-1/4 w-3 h-3 rounded-full bg-blue-500/20 active-glow [animation-delay:0.5s]" />
             </div>
             <span className="text-[9px] font-mono text-gray-500 uppercase mt-2 tracking-widest text-center font-medium">
-              {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'Tracing curves, nodes & sub-paths' : 'Quantizing and scaling pixels'}
+              {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'Melacak kurva, simpul & sub-jalur garis' : 'Mengkuantisasi dan mengubah ukuran piksel'}
             </span>
           </div>
 
@@ -163,11 +163,11 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
               </span>
 
               <div className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-emerald-500 flex items-center justify-center text-[8px] font-sans font-bold text-white shadow-md">
-                OUT
+                KELUAR
               </div>
             </div>
             <span className="text-[10px] font-mono text-cyan-300 mt-2 font-bold tracking-tight">
-              {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'VECTOR ASSET' : 'OPTIMIZED IMAGE'}
+              {selectedFormat === 'svg' || selectedFormat === 'eps' ? 'ASET VEKTOR' : 'GAMBAR DIOPTIMALKAN'}
             </span>
           </div>
 
@@ -226,7 +226,7 @@ export default function FormatSelector({ selectedFormat, onChangeFormat }: Forma
       <div className="mt-4 bg-white/5 border border-white/10 rounded-2xl p-4 flex items-start gap-2.5">
         <Info className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
         <span className="text-[11px] font-sans text-gray-400 leading-relaxed font-normal">
-          <strong>Configuration Note:</strong> {formats.find(f => f.id === selectedFormat)?.detail}
+          <strong>Tip Konfigurasi:</strong> {formats.find(f => f.id === selectedFormat)?.detail}
         </span>
       </div>
     </motion.div>

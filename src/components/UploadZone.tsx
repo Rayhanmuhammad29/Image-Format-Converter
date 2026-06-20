@@ -43,7 +43,7 @@ export default function UploadZone({ onFilesSelected }: UploadZoneProps) {
       setErrorMsg(null);
       onFilesSelected(validFiles);
     } else {
-      setErrorMsg('Unsupported format. Please upload JPG, PNG, WEBP, or SVG files.');
+      setErrorMsg('Format tidak didukung. Harap unggah file JPG, PNG, WEBP, SVG, atau EPS.');
     }
   };
 
@@ -106,10 +106,10 @@ export default function UploadZone({ onFilesSelected }: UploadZoneProps) {
         </div>
 
         <h3 className="text-2xl font-bold text-white mb-2 relative z-10 font-sans tracking-tight">
-          Instant Format Transformation
+          Transformasi Format Gambar Instan
         </h3>
         <p className="text-sm text-gray-400 max-w-md mb-8 relative z-10 leading-relaxed font-normal">
-          Drag and drop high-resolution assets here to initiate premium format optimization. Supports <span className="text-cyan-300 font-mono font-bold">PNG, JPG, WEBP</span> to vector tracing and re-indexing.
+          Seret dan letakkan gambar resolusi tinggi ke sini untuk memulai pengoptimalan format premium. Mendukung konversi <span className="text-cyan-300 font-mono font-bold">PNG, JPG, WEBP</span> ke penelusuran bentuk vektor & pengaturan format presisi.
         </p>
 
         <button
@@ -118,7 +118,7 @@ export default function UploadZone({ onFilesSelected }: UploadZoneProps) {
           id="select-files-btn"
         >
           <UploadCloud className="w-4.5 h-4.5 text-white" />
-          CHOOSE LOCAL IMAGES
+          PILIH GAMBAR LOKAL
         </button>
 
         <input
@@ -143,7 +143,7 @@ export default function UploadZone({ onFilesSelected }: UploadZoneProps) {
         )}
 
         <div className="mt-8 text-[11px] font-mono text-gray-500 tracking-widest font-semibold uppercase">
-          100% Client-Side Engine &bull; Zero Quality Loss
+          100% Mesin Klien &bull; Tanpa Pengurangan Kualitas
         </div>
       </div>
     </motion.div>

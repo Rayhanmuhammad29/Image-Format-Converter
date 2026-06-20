@@ -41,7 +41,7 @@ export default function Header({ onReset, filesCount }: HeaderProps) {
               </span>
             </div>
             <p className="text-[11px] font-mono text-gray-400 leading-none mt-1 uppercase tracking-wider">
-              PRO VECTOR & BITMAP ENGINE
+              MESIN VEKTOR & BITMAP PRO
             </p>
           </div>
         </div>
@@ -54,21 +54,21 @@ export default function Header({ onReset, filesCount }: HeaderProps) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
             </div>
             <span className="text-xs font-mono text-slate-400 font-medium">
-              Engine: <strong className="text-white font-semibold">Local v2.4</strong>
+              Mesin: <strong className="text-white font-semibold">Lokal v2.4</strong>
             </span>
           </div>
 
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
             <Cpu className="w-3.5 h-3.5 text-cyan-400" />
             <span className="text-xs font-mono text-slate-400 font-medium">
-              Tracing: <strong className="text-white font-semibold">Vector Edge</strong>
+              Mode Vektor: <strong className="text-white font-semibold">Tepi Presisi</strong>
             </span>
           </div>
 
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
             <CloudLightning className="w-3.5 h-3.5 text-blue-400" />
             <span className="text-xs font-mono text-slate-400 font-medium">
-              Privacy: <strong className="text-white font-semibold">100% Client</strong>
+              Privasi: <strong className="text-white font-semibold">100% Klien</strong>
             </span>
           </div>
         </div>
@@ -81,12 +81,12 @@ export default function Header({ onReset, filesCount }: HeaderProps) {
               className="text-xs font-mono text-slate-400 hover:text-white transition-all px-3 py-1.5 rounded-md hover:bg-white/10 border border-transparent hover:border-white/10"
               id="header-clear-btn"
             >
-              Clear Workspace
+              Kosongkan Ruang Kerja
             </button>
           )}
           <span className="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/5 text-cyan-300 border border-white/10 shadow-[0_0_15px_rgba(34,211,238,0.15)] flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            Active Queue: {filesCount}
+            Antrean Aktif: {filesCount}
           </span>
         </div>
 

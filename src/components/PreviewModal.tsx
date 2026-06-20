@@ -69,10 +69,10 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
           <div>
             <h4 className="font-sans font-bold text-white tracking-tight flex items-center gap-2 text-base">
               <Sparkles className="w-5 h-5 text-cyan-400" />
-              Dynamic Precision Comparator
+              Komparator Presisi Dinamis Gambar
             </h4>
             <p className="text-xs text-gray-400 mt-1 truncate max-w-md md:max-w-xl">
-              File: <strong className="text-gray-200 font-semibold">{file.name}</strong>
+              Berkas: <strong className="text-gray-200 font-semibold">{file.name}</strong>
             </p>
           </div>
 
@@ -101,12 +101,12 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
               {/* Background Original Image */}
               <img
                 src={file.previewUrl}
-                alt="Original Source"
+                alt="Source Asli"
                 className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-4 left-4 z-20 bg-slate-950/80 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-mono text-gray-300 font-bold uppercase">
-                SOURCE: BITMAP
+                SUMBER: BITMAP (ASLI)
               </div>
 
               {/* Foreground Converted Image (Clipped dynamically by slider position) */}
@@ -114,23 +114,15 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
                 className="absolute inset-0 overflow-hidden pointer-events-none"
                 style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
               >
-                {result.format === 'svg' ? (
-                  // For SVG, we load it inside a styled container converting string to url
-                  <div 
-                    className="w-full h-full bg-slate-950 flex items-center justify-center p-2"
-                    dangerouslySetInnerHTML={{ __html: atob(result.dataUrl.split(',')[1]) }}
-                  />
-                ) : (
-                  <img
-                    src={result.dataUrl}
-                    alt="Converted output preview"
-                    className="absolute inset-0 w-full h-full object-contain bg-slate-950"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
+                <img
+                  src={result.dataUrl}
+                  alt="Converted output preview"
+                  className="absolute inset-0 w-full h-full object-contain bg-slate-950"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <div className="absolute top-4 right-4 z-20 bg-cyan-950/90 border border-cyan-500/20 px-3 py-1.5 rounded-lg text-[10px] font-mono text-cyan-300 font-bold shadow-[0_0_15px_rgba(6,182,212,0.25)]">
-                TARGET: {result.format.toUpperCase()}
+                TARGET HASIL: {result.format.toUpperCase()}
               </div>
 
               {/* Slider Grab handle line divider */}
@@ -153,7 +145,7 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
             </div>
 
             <span className="text-[10px] font-mono text-gray-500 mt-3 block text-center font-semibold">
-              DRAG CENTRAL DIVISION HANDLE TO COMPARE COMPRESSION OR PATH RESOLUTIONS
+              GESER GAGANG TENGAH UNTUK MEMBANDINGKAN KUALITAS KOMPRESI ATAU RESOLUSI DETAIL GAMBAR
             </span>
           </div>
 
@@ -161,12 +153,12 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
           <div className="w-full md:w-80 flex flex-col justify-between space-y-6">
             
             <div className="space-y-4">
-              <h5 className="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider">OPTIMIZATION METRICS</h5>
+              <h5 className="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider">METRIK OPTIMALISASI</h5>
               
               <div className="space-y-3">
                 {/* Source Stats */}
                 <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <span className="text-[10px] font-mono text-gray-500 uppercase block font-semibold">Original Bitmap File</span>
+                  <span className="text-[10px] font-mono text-gray-500 uppercase block font-semibold">Berkas Asli (Bitmap)</span>
                   <div className="flex justify-between items-baseline mt-1.5">
                     <span className="text-sm font-sans font-bold text-gray-300">
                       {file.name.substring(file.name.lastIndexOf('.')).replace('.', '').toUpperCase()}
@@ -176,20 +168,20 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-gray-500 block mt-1 font-medium">
-                    Resolution: {file.width}×{file.height} px
+                    Resolusi: {file.width}×{file.height} px
                   </span>
                 </div>
 
                 {/* Arrow indicator */}
                 <div className="flex justify-center my-1">
                   <span className="text-[9px] font-mono text-cyan-300/80 font-bold uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                    ▼ TRANSFORMING ▼
+                    ▼ PROSES TRANSFORMASI ▼
                   </span>
                 </div>
 
                 {/* Target Stats */}
                 <div className="bg-cyan-500/10 p-4 rounded-2xl border border-cyan-400/20">
-                  <span className="text-[10px] font-mono text-cyan-300 uppercase block font-semibold">Optimized Result File</span>
+                  <span className="text-[10px] font-mono text-cyan-300 uppercase block font-semibold">Hasil Berkas Optimal</span>
                   <div className="flex justify-between items-baseline mt-1.5">
                     <span className="text-sm font-sans font-bold text-cyan-300">
                       {result.format.toUpperCase()}
@@ -199,7 +191,7 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-cyan-400/70 block mt-1 font-medium">
-                    Resolution: {result.width}×{result.height} px
+                    Resolusi: {result.width}×{result.height} px
                   </span>
                 </div>
               </div>
@@ -208,9 +200,9 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
               {result.compressionRatio !== undefined && (
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-mono text-gray-500 block">FILE MODIFICATION:</span>
+                    <span className="text-[10px] font-mono text-gray-500 block">MODIFIKASI FILE:</span>
                     <span className="text-xs text-gray-300 font-sans font-semibold mt-1 block">
-                      {result.compressionRatio < 0 ? 'Payload reduced by' : 'Payload increased by'}
+                      {result.compressionRatio < 0 ? 'Ukuran file berkurang' : 'Ukuran file bertambah'}
                     </span>
                   </div>
                   <span className={`text-lg font-mono font-black ${result.compressionRatio < 0 ? 'text-emerald-400' : 'text-purple-400'}`}>
@@ -224,12 +216,12 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
             <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-mono text-cyan-400 font-bold">
                 <Info className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Format Advice</span>
+                <span>Rekomendasi Format</span>
               </div>
               <p className="text-[10px] text-gray-400 leading-relaxed font-normal">
                 {result.format === 'svg' || result.format === 'eps'
-                  ? 'Vector outputs contain mathematical geometry rather than physical pixels. Contouring curves isolates geometric shapes, making it completely lossless and infinite scalable.'
-                  : 'Web-optimized formats such as WEBP incorporate prediction filters and smart compression algorithms to achieve tiny file sizes without visible pixel quality deterioration.'
+                  ? 'Format vektor menggunakan perhitungan koordinat matematis geometris, bukan piksel biasa. Jalur lekukan kurva ini membuat gambar tidak akan pecah meski diperbesar tanpa batas.'
+                  : 'Format web seperti WEBP & PNG yang paling optimal menggunakan algoritma pemadatan warna pintar untuk mereduksi ukuran file tanpa menurunkan detil ketajaman foto.'
                 }
               </p>
             </div>
@@ -245,7 +237,7 @@ export default function PreviewModal({ file, result, onClose }: PreviewModalProp
             className="text-xs font-sans font-extrabold bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 hover:text-white px-5 py-3 rounded-full cursor-pointer transition-all tracking-wide"
             id="lightbox-close-footer"
           >
-            DISMISS COMPARATOR
+            TUTUP KOMPARATOR
           </button>
         </div>
 

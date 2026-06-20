@@ -51,21 +51,21 @@ export default function BatchList({
         <div>
           <h4 className="font-sans font-bold text-white tracking-tight flex items-center gap-2 text-base">
             <FileCheck className="w-5 h-5 text-cyan-400" />
-            Conversion Workspace Queue
+            Antrean Ruang Kerja Konversi Gambar
           </h4>
           <p className="text-xs text-gray-400 mt-1">
-            Review files selected, track process optimizations, and download resulting assets.
+            Tinjau berkas yang dipilih, pantau progres optimalisasi, dan unduh aset hasil konversi secara instan.
           </p>
         </div>
         <span className="text-xs font-mono text-gray-400 bg-white/10 border border-white/10 px-3 py-1 rounded-full font-bold">
-          Queue: <strong className="text-cyan-300">{files.length}</strong>
+          Antrean: <strong className="text-cyan-300">{files.length}</strong>
         </span>
       </div>
 
       {files.length === 0 ? (
         <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-white/2">
           <p className="text-sm font-mono text-gray-500">
-            No files currently in active workspace queue. Please drag and drop to upload.
+            Belum ada berkas gambar di antrean ruang kerja. Silakan seret dan lepas file untuk mengunggah.
           </p>
         </div>
       ) : (
@@ -167,31 +167,29 @@ export default function BatchList({
                     {isProcessing && (
                       <div className="flex items-center gap-2 text-cyan-300 text-xs font-mono font-semibold" id={`processing-badge-${file.id}`}>
                         <Loader2 className="w-4 h-4 text-cyan-455 animate-spin" />
-                        <span>Optimizing layers...</span>
+                        <span>Mengonversi piksel...</span>
                       </div>
                     )}
 
                     {isPending && (
                       <div className="text-xs font-mono text-gray-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded" id={`pending-badge-${file.id}`}>
-                        Ready
+                        Siap
                       </div>
                     )}
 
                     {isError && (
                       <div className="flex items-center gap-1.5 text-xs font-mono text-rose-300 bg-rose-500/10 border border-rose-500/35 px-2.5 py-1 rounded-xl" id={`error-badge-${file.id}`}>
                         <AlertTriangle className="w-3.5 h-3.5 text-rose-300" />
-                        <span>Failed</span>
+                        <span>Gagal</span>
                       </div>
-                    )}
-
-                    {/* Operational Action Buttons */}
+                    )}                    {/* Operational Action Buttons */}
                     <div className="flex items-center gap-2">
                       {/* Preview comparison (completed rasters/vectors) */}
                       {isSuccess && result && (
                         <button
                           onClick={() => onPreview(file.id)}
                           className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 hover:bg-white/10 transition-colors text-cyan-400 cursor-pointer"
-                          title="Compare source vs target"
+                          title="Bandingkan berkas asli dengan hasil konversi"
                           id={`preview-compare-btn-${file.id}`}
                         >
                           <Eye className="w-4 h-4 text-cyan-400" />
@@ -203,7 +201,7 @@ export default function BatchList({
                         <button
                           onClick={() => onDownload(file.id)}
                           className="p-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-105 active:scale-95 transition-all text-white font-bold cursor-pointer shadow-lg"
-                          title="Download converted output asset"
+                          title="Unduh aset konversi"
                           id={`download-complt-btn-${file.id}`}
                         >
                           <Download className="w-4 h-4 text-white" />
@@ -214,7 +212,7 @@ export default function BatchList({
                       <button
                         onClick={() => onRemove(file.id)}
                         className="p-2 rounded-xl bg-white/5 border border-white/5 hover:border-rose-500/30 hover:bg-rose-500/10 transition-colors text-gray-500 hover:text-rose-400 cursor-pointer"
-                        title="Remove file from workspace scope"
+                        title="Hapus gambar dari antrean konversi"
                         id={`delete-queue-btn-${file.id}`}
                       >
                         <Trash2 className="w-4 h-4" />

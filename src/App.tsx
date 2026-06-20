@@ -24,10 +24,15 @@ export default function App() {
     quality: 0.85,
     width: -1, // -1 means original size
     height: -1,
+    scale: 1, // 1 means no scaling
     keepAspectRatio: true,
+    upscaleMode: 'hd-sharp',
+    sharpenAmount: 0.35,
     traceColorMode: 'color',
     traceThreshold: 128,
-    traceColorsCount: 8
+    traceColorsCount: 16,
+    traceFidelity: 'high',
+    traceSmoothing: false
   });
 
   // Load state and clear workspace triggers
@@ -131,11 +136,14 @@ export default function App() {
       }));
 
       try {
-        // Target dimension mapping with aspect ratio lock
+        // Target dimension mapping with aspect ratio lock and scale factors
         let targetWidth = currentFile.width;
         let targetHeight = currentFile.height;
 
-        if (settings.width !== -1 && settings.height !== -1) {
+        if (settings.scale && settings.scale > 1) {
+          targetWidth = Math.round(currentFile.width * settings.scale);
+          targetHeight = Math.round(currentFile.height * settings.scale);
+        } else if (settings.width !== -1 && settings.height !== -1) {
           targetWidth = settings.width;
           targetHeight = settings.height;
         } else if (settings.width !== -1) {
@@ -195,7 +203,7 @@ export default function App() {
           }));
 
         } else {
-          // Trigger standard HTML5 Canvas Rasterization
+          // Trigger standard HTML5 Canvas Rasterization with custom premium upscaling filters
           const canvas = document.createElement('canvas');
           canvas.width = targetWidth;
           canvas.height = targetHeight;
@@ -203,11 +211,103 @@ export default function App() {
           
           if (!ctx) throw new Error('Failed to retrieve canvas graphics context');
 
-          // Draw the image onto the resized canvas
+          // Draw the image onto the resized canvas and apply pixel-restoration sharpening/smoothing
           const img = new Image();
           await new Promise<void>((resolveLoad, rejectLoad) => {
             img.onload = () => {
+              // Fine-tune canvas smoothing flags based on upscale mode
+              if (settings.upscaleMode === 'hd-sharp') {
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+              } else if (settings.upscaleMode === 'artistic-smooth') {
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+              } else {
+                ctx.imageSmoothingEnabled = true; // High-quality standard smooth scaling
+                ctx.imageSmoothingQuality = 'high';
+              }
+
+              // Perform raw stretch/scaling onto target dimensions
               ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+              // Apply pixel-restoration algorithms for enhanced upscales
+              const isUpscaled = targetWidth > currentFile.width || targetHeight > currentFile.height;
+              
+              if (isUpscaled) {
+                if (settings.upscaleMode === 'hd-sharp' && settings.sharpenAmount > 0) {
+                  // High-Definition Intelligent Sharp: Unsharp Mask Convolution filtering
+                  try {
+                    const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+                    const data = imgData.data;
+                    const w = targetWidth;
+                    const h = targetHeight;
+                    const copy = new Uint8ClampedArray(data);
+                    const mix = settings.sharpenAmount;
+
+                    // Unsharp mask high-pass convolution loop
+                    for (let y = 1; y < h - 1; y++) {
+                      for (let x = 1; x < w - 1; x++) {
+                        const idx = (y * w + x) * 4;
+                        for (let c = 0; c < 3; c++) {
+                          // Unsharp mask laplacian formula: Center is 5, surrounding is -1
+                          const val = 5 * copy[idx + c]
+                            - copy[idx - 4 + c]          // Left
+                            - copy[idx + 4 + c]          // Right
+                            - copy[idx - w * 4 + c]      // Up
+                            - copy[idx + w * 4 + c];     // Down
+
+                          const originalVal = copy[idx + c];
+                          const sharpenedVal = val < 0 ? 0 : val > 255 ? 255 : val;
+                          
+                          // Linear interpolation based on sharpenAmount
+                          data[idx + c] = originalVal + (sharpenedVal - originalVal) * mix;
+                        }
+                      }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                  } catch (e) {
+                    console.error('Sharp upscale convolution failure:', e);
+                  }
+                } else if (settings.upscaleMode === 'artistic-smooth') {
+                  // Artistic Smooth Up-sampler: Anti-aliasing Symmetrical Low-Pass filter
+                  try {
+                    const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+                    const data = imgData.data;
+                    const w = targetWidth;
+                    const h = targetHeight;
+                    const copy = new Uint8ClampedArray(data);
+
+                    for (let y = 1; y < h - 1; y++) {
+                      for (let x = 1; x < w - 1; x++) {
+                        const idx = (y * w + x) * 4;
+                        for (let c = 0; c < 3; c++) {
+                          const nIdxL = idx - 4;
+                          const nIdxR = idx + 4;
+                          const nIdxU = idx - w * 4;
+                          const nIdxD = idx + w * 4;
+                          const nIdxUL = nIdxU - 4;
+                          const nIdxUR = nIdxU + 4;
+                          const nIdxDL = nIdxD - 4;
+                          const nIdxDR = nIdxD + 4;
+
+                          // Bilinear 9-cell Gaussian low-pass smoothing weights:
+                          // Center weighted 10/22, ortho neighbors 2/22, corner neighbors 1/22
+                          const sum = (
+                            10 * copy[idx + c] +
+                            2 * (copy[nIdxL + c] + copy[nIdxR + c] + copy[nIdxU + c] + copy[nIdxD + c]) +
+                            1 * (copy[nIdxUL + c] + copy[nIdxUR + c] + copy[nIdxDL + c] + copy[nIdxDR + c])
+                          ) / 22;
+
+                          data[idx + c] = sum;
+                        }
+                      }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                  } catch (e) {
+                    console.error('Artistic smooth low-pass upscale failure:', e);
+                  }
+                }
+              }
               resolveLoad();
             };
             img.onerror = () => rejectLoad(new Error('Failed to load image element'));
@@ -310,18 +410,18 @@ export default function App() {
             <div className="space-y-1">
               <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                Succeed With High-Detail Intelligent Tracing
+                Konversi Presisi Tinggi dengan Penelusuran Vektor Cerdas
               </h2>
               <p className="text-sm text-gray-400 leading-relaxed max-w-2xl">
-                Convert any standard raster photo into infinite scale vectors (SVG, EPS) using local pixel contours, or optimize web payload compression with next-gen WEBP/PNG re-indexing.
+                Ubah gambar bitmap standar Anda menjadi grafik vektor skala tak terbatas (SVG, EPS) menggunakan deteksi kontur lokal, atau optimalkan rasio kompresi gambar web dengan format ultra-efisien WEBP/PNG.
               </p>
             </div>
             <div className="flex items-center gap-3 font-mono text-[10px]">
               <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 font-bold tracking-wide">
-                ⚡ Local CPU Processing
+                ⚡ Pemrosesan Lokal di Browser
               </span>
               <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 font-bold tracking-wide">
-                🔒 No Data Leaks
+                🔒 Privasi Data 100% Aman
               </span>
             </div>
           </div>
@@ -362,7 +462,7 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                       <span className="text-xs font-mono text-gray-300">
-                        Completed <strong className="text-emerald-400 font-extrabold">{successCount}/{files.length}</strong> items successfully.
+                        Berhasil mengonversi <strong className="text-emerald-400 font-extrabold">{successCount}/{files.length}</strong> gambar secara aman.
                       </span>
                     </div>
                     <button
@@ -370,7 +470,7 @@ export default function App() {
                       className="w-full sm:w-auto font-sans text-xs font-black bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-6 py-3.5 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                       id="download-all-batch-btn"
                     >
-                      DOWNLOAD COMPLETED BATCH ({successCount})
+                      UNDUH SEMUA BATCH SELESAI ({successCount})
                     </button>
                   </div>
                 )}
@@ -405,8 +505,8 @@ export default function App() {
         {/* Footer System credits */}
         <footer className="border-t border-white/10 bg-white/2 px-6 py-8 mt-16 text-center text-xs font-mono text-gray-500">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span>&copy; {new Date().getFullYear()} Image Format Converter. Premium Studio Kit. </span>
-            <span className="text-gray-600 font-medium">Designed with absolute desktop high contrast and pixel safety.</span>
+            <span>&copy; {new Date().getFullYear()} Konverter Format Gambar Premium Studio. </span>
+            <span className="text-gray-600 font-medium">Dirancang dengan presisi penajaman piksel tinggi dan keamanan lokal penuh.</span>
           </div>
         </footer>
       </div>

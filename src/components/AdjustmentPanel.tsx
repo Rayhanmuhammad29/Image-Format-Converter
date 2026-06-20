@@ -37,7 +37,7 @@ export default function AdjustmentPanel({
     setWidthInput(val);
     const num = parseInt(val, 10);
     if (!isNaN(num) && num > 0) {
-      onChangeSettings({ ...settings, width: num });
+      onChangeSettings({ ...settings, width: num, scale: 1 });
     } else {
       onChangeSettings({ ...settings, width: -1 }); // Original fallback
     }
@@ -47,7 +47,7 @@ export default function AdjustmentPanel({
     setHeightInput(val);
     const num = parseInt(val, 10);
     if (!isNaN(num) && num > 0) {
-      onChangeSettings({ ...settings, height: num });
+      onChangeSettings({ ...settings, height: num, scale: 1 });
     } else {
       onChangeSettings({ ...settings, height: -1 }); // Original fallback
     }
@@ -56,13 +56,13 @@ export default function AdjustmentPanel({
   const setResPreset = (w: number, h: number) => {
     setWidthInput(w.toString());
     setHeightInput(h.toString());
-    onChangeSettings({ ...settings, width: w, height: h });
+    onChangeSettings({ ...settings, width: w, height: h, scale: 1 });
   };
 
   const setOriginalSize = () => {
     setWidthInput('original');
     setHeightInput('original');
-    onChangeSettings({ ...settings, width: -1, height: -1 });
+    onChangeSettings({ ...settings, width: -1, height: -1, scale: 1 });
   };
 
   return (
@@ -78,7 +78,7 @@ export default function AdjustmentPanel({
       <div className="flex items-center gap-2 mb-6">
         <Sliders className="w-5 h-5 text-cyan-400" />
         <h4 className="font-sans font-bold text-white tracking-tight text-base">
-          Optimization & Adjustments
+          Optimasi & Penyesuaian Format
         </h4>
       </div>
 
@@ -88,29 +88,29 @@ export default function AdjustmentPanel({
         <div className="space-y-4">
           <div>
             <label className="text-xs font-mono font-bold text-gray-300 flex items-center justify-between">
-              <span>OUTPUT DIMENSIONS</span>
-              <span className="text-[10px] text-gray-500 font-normal">Width &bull; Height (pixels)</span>
+              <span>DIMENSI OUTPUT GAMBAR</span>
+              <span className="text-[10px] text-gray-500 font-normal">Lebar &bull; Tinggi (piksel)</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-2">
               <div>
-                <span className="text-[10px] font-mono text-gray-400 block mb-1">Target Width</span>
+                <span className="text-[10px] font-mono text-gray-400 block mb-1">Lebar Target</span>
                 <input
                   type="text"
                   value={widthInput}
                   onChange={(e) => handleWidthChange(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
-                  placeholder="original"
+                  placeholder="asli"
                   id="target-width-field"
                 />
               </div>
               <div>
-                <span className="text-[10px] font-mono text-gray-400 block mb-1">Target Height</span>
+                <span className="text-[10px] font-mono text-gray-400 block mb-1">Tinggi Target</span>
                 <input
                   type="text"
                   value={heightInput}
                   onChange={(e) => handleHeightChange(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
-                  placeholder="original"
+                  placeholder="asli"
                   id="target-height-field"
                 />
               </div>
@@ -119,7 +119,7 @@ export default function AdjustmentPanel({
 
           {/* Quick Res Presets */}
           <div>
-            <span className="text-[10px] font-mono text-gray-400 block mb-1.5">Preset Scale Configurations (Smallest to Highest)</span>
+            <span className="text-[10px] font-mono text-gray-400 block mb-1.5">Preset Konfigurasi Skala (Paling Kecil ke Terbesar)</span>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={setOriginalSize}
@@ -128,7 +128,7 @@ export default function AdjustmentPanel({
                 }`}
                 id="preset-original"
               >
-                Original Size
+                Ukuran Asli
               </button>
               <button
                 onClick={() => setResPreset(512, 512)}
@@ -137,7 +137,7 @@ export default function AdjustmentPanel({
                 }`}
                 id="preset-512x512"
               >
-                512px (Small Icon)
+                512px (Ikon Kecil)
               </button>
               <button
                 onClick={() => setResPreset(800, 800)}
@@ -146,7 +146,7 @@ export default function AdjustmentPanel({
                 }`}
                 id="preset-800x800"
               >
-                800px (Medium Square)
+                800px (Kotak Sedang)
               </button>
               <button
                 onClick={() => setResPreset(1280, 720)}
@@ -187,6 +187,65 @@ export default function AdjustmentPanel({
             </div>
           </div>
 
+          {/* Scale Multiplier Feature for No-distortion Super-Resolution upscales */}
+          <div>
+            <span className="text-[10px] font-mono text-gray-400 block mb-1.5 font-bold uppercase tracking-wide">Faktor Perbesaran Piksel (Upscaling Pintar)</span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  onChangeSettings({ ...settings, scale: 1, width: -1, height: -1 });
+                  setWidthInput('original');
+                  setHeightInput('original');
+                }}
+                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  (settings.scale === 1 || !settings.scale) && settings.width === -1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                }`}
+                id="scale-1x"
+              >
+                1x (Ukuran Asli)
+              </button>
+              <button
+                onClick={() => {
+                  onChangeSettings({ ...settings, scale: 1.5, width: -1, height: -1 });
+                  setWidthInput('1.5x');
+                  setHeightInput('1.5x');
+                }}
+                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  settings.scale === 1.5 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                }`}
+                id="scale-1.5x"
+              >
+                1.5x HD
+              </button>
+              <button
+                onClick={() => {
+                  onChangeSettings({ ...settings, scale: 2, width: -1, height: -1 });
+                  setWidthInput('2x');
+                  setHeightInput('2x');
+                }}
+                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  settings.scale === 2 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                }`}
+                id="scale-2x"
+              >
+                2x Super-Res (Tajam)
+              </button>
+              <button
+                onClick={() => {
+                  onChangeSettings({ ...settings, scale: 4, width: -1, height: -1 });
+                  setWidthInput('4x');
+                  setHeightInput('4x');
+                }}
+                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  settings.scale === 4 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                }`}
+                id="scale-4x"
+              >
+                4x Ultra-Res (Maksimalkan Detail)
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2 pt-2">
             <input
               type="checkbox"
@@ -196,9 +255,78 @@ export default function AdjustmentPanel({
               className="rounded bg-white/5 border-white/15 text-cyan-400 focus:ring-cyan-500/30 w-4 h-4 cursor-pointer"
             />
             <label htmlFor="lock-aspect" className="text-xs text-gray-400 font-mono select-none cursor-pointer">
-              Lock aspect ratio of source file
+              Kunci rasio aspek file sumber (proporsi stabil)
             </label>
           </div>
+
+          {/* Upscaling Engine Controls (Visible only for raster outputs) */}
+          {!isVector && (
+            <div className="pt-4 border-t border-white/5 space-y-4">
+              <div>
+                <label className="text-xs font-mono font-bold text-gray-300 block mb-1.5 flex items-center justify-between">
+                  <span>FILTER RESOLUSI PERBESARAN PINTAR (UPSCALING)</span>
+                  <span className="text-[10px] text-cyan-300 bg-cyan-400/10 border border-cyan-400/20 px-1.5 py-0.2 rounded font-bold uppercase">PREMIUM</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => onChangeSettings({ ...settings, upscaleMode: 'hd-sharp' })}
+                    className={`text-[9px] font-mono leading-tight py-2.5 px-1 rounded-xl text-center transition-all cursor-pointer border ${
+                      settings.upscaleMode === 'hd-sharp'
+                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 font-bold shadow-[0_0_12px_rgba(6,182,212,0.15)]'
+                        : 'bg-white/5 text-gray-400 border-white/5 hover:border-white/12'
+                    }`}
+                    id="upscale-hd-sharp"
+                  >
+                    HD Penajaman
+                  </button>
+                  <button
+                    onClick={() => onChangeSettings({ ...settings, upscaleMode: 'artistic-smooth' })}
+                    className={`text-[9px] font-mono leading-tight py-2.5 px-1 rounded-xl text-center transition-all cursor-pointer border ${
+                      settings.upscaleMode === 'artistic-smooth'
+                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 font-bold shadow-[0_0_12px_rgba(6,182,212,0.15)]'
+                        : 'bg-white/5 text-gray-400 border-white/5 hover:border-white/12'
+                    }`}
+                    id="upscale-artistic"
+                  >
+                    Karya Halus
+                  </button>
+                  <button
+                    onClick={() => onChangeSettings({ ...settings, upscaleMode: 'original' })}
+                    className={`text-[9px] font-mono leading-tight py-2.5 px-1 rounded-xl text-center transition-all cursor-pointer border ${
+                      settings.upscaleMode === 'original'
+                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 font-bold shadow-[0_0_12px_rgba(6,182,212,0.15)]'
+                        : 'bg-white/5 text-gray-400 border-white/5 hover:border-white/12'
+                    }`}
+                    id="upscale-original"
+                  >
+                    Langsung Standar
+                  </button>
+                </div>
+              </div>
+
+              {settings.upscaleMode === 'hd-sharp' && (
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-[10px] font-mono text-gray-300">
+                    <span>INTENSITAS PENAJAMAN (KONTRAS TEPI)</span>
+                    <span className="text-cyan-300 font-bold">{Math.round(settings.sharpenAmount * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1.0"
+                    step="0.05"
+                    value={settings.sharpenAmount}
+                    onChange={(e) => onChangeSettings({ ...settings, sharpenAmount: parseFloat(e.target.value) })}
+                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan-400 mt-1"
+                    id="sharpen-range-slider"
+                  />
+                  <span className="text-[9px] text-gray-500 block font-normal leading-relaxed">
+                    Melenyapkan keburaman interpolasi (biasa terjadi saat memperbesar piksel) demi render tekstur ultra-tajam berketepatan tinggi.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Dynamic Section: Quality or Vector Tracing Panel */}
@@ -208,7 +336,7 @@ export default function AdjustmentPanel({
             <div className="space-y-4" id="raster-quality-controls">
               <div>
                 <label className="text-xs font-mono font-bold text-gray-300 flex items-center justify-between">
-                  <span>COMPRESSION STRENGTH & QUALITY</span>
+                  <span>KEKUATAN KOMPRESI & KUALITAS RE-INDEX</span>
                   <span className="text-cyan-300 font-mono text-xs">{Math.round(settings.quality * 100)}%</span>
                 </label>
                 <input
@@ -224,13 +352,13 @@ export default function AdjustmentPanel({
               </div>
 
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                <span className="text-[10px] font-mono text-cyan-300 block font-semibold uppercase tracking-wider">OPTIMIZATION SUGGESTION:</span>
+                <span className="text-[10px] font-mono text-cyan-300 block font-semibold uppercase tracking-wider">SARAN OPTIMASI:</span>
                 <span className="text-[10px] text-gray-400 mt-1 block leading-relaxed">
                   {settings.quality < 0.6 
-                    ? 'Ultra compact payload size, appropriate for rapid web icons but might trigger fine color banding highlights.'
+                    ? 'Ukuran file sangat ringkas, cocok untuk pemuatan ikon web cepat tetapi dapat memunculkan sedikit degradasi atau gradien warna kasar.'
                     : settings.quality > 0.85
-                    ? 'Premium image retention, recommended for production photography layouts with minimal artifacts.'
-                    : 'Balanced standard - optimal configuration for file size compression versus dynamic range loss.'
+                    ? 'Kualitas gambar premium, direkomendasikan untuk layout fotografi produksi dengan objek detail atau teks tanpa blur.'
+                    : 'Standar seimbang - konfigurasi paling optimal antara ukuran file terkompresi dengan kestabilan rentang dinamis warna.'
                   }
                 </span>
               </div>
@@ -243,7 +371,7 @@ export default function AdjustmentPanel({
               {/* Trace Mode Selection */}
               <div>
                 <label className="text-xs font-mono font-bold text-gray-300 block mb-1.5">
-                  COLOR QUANTIZATION MODE
+                  MODE KUANTISASI WARNA VEKTOR
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -256,7 +384,7 @@ export default function AdjustmentPanel({
                     id="trace-color"
                   >
                     <Grid className="w-3.5 h-3.5" />
-                    Color Palette Trace
+                    Jalur Palet Warna
                   </button>
                   <button
                     onClick={() => onChangeSettings({ ...settings, traceColorMode: 'monochrome' })}
@@ -268,7 +396,7 @@ export default function AdjustmentPanel({
                     id="trace-mono"
                   >
                     <Sliders className="w-3.5 h-3.5" />
-                    Silhouette Path
+                    Siluet Monokrom
                   </button>
                 </div>
               </div>
@@ -277,13 +405,13 @@ export default function AdjustmentPanel({
               {settings.traceColorMode === 'color' ? (
                 <div>
                   <div className="flex justify-between items-center text-xs font-mono text-gray-300">
-                    <span>MAX COHERENT COLORS</span>
-                    <span className="text-purple-300 font-bold">{settings.traceColorsCount} layers</span>
+                    <span>WARNA PALET MAKSIMUM</span>
+                    <span className="text-purple-300 font-bold">{settings.traceColorsCount} warna</span>
                   </div>
                   <input
                     type="range"
                     min="2"
-                    max="16"
+                    max="64"
                     step="1"
                     value={settings.traceColorsCount}
                     onChange={(e) => onChangeSettings({ ...settings, traceColorsCount: parseInt(e.target.value, 10) })}
@@ -291,13 +419,13 @@ export default function AdjustmentPanel({
                     id="vector-layers-slider"
                   />
                   <span className="text-[10px] text-gray-500 block mt-1 font-normal">
-                    Fewer colors produce more posterized, comic-style vector results.
+                    Jumlah warna lebih banyak (hingga 64) menghasilkan detail warna vektor yang lebih kaya dan berlesung halus (tidak pecah).
                   </span>
                 </div>
               ) : (
                 <div>
                   <div className="flex justify-between items-center text-xs font-mono text-gray-300">
-                    <span>SILHOUETTE THRESHOLD</span>
+                    <span>AMBANG BATAS SILUET (THRESHOLD)</span>
                     <span className="text-purple-300 font-bold">{settings.traceThreshold}</span>
                   </div>
                   <input
@@ -311,10 +439,56 @@ export default function AdjustmentPanel({
                     id="vector-threshold-slider"
                   />
                   <span className="text-[10px] text-gray-500 block mt-1 font-normal">
-                    Higher threshold darkens the shadow paths, capturing finer detail.
+                    Ambang batas yang lebih tinggi menggelapkan jalur bayangan monokrom, mempertahankan detail kontur halus.
                   </span>
                 </div>
               )}
+
+              {/* Premium Tracing Options: Fidelity & Smoothing */}
+              <div className="pt-4 border-t border-white/5 space-y-4">
+                
+                {/* Tracing Fidelity (Dynamic input resolution map) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono font-bold text-gray-300 block flex items-center justify-between">
+                    <span>KETEPATAN DETAIL PENELUSURAN (FIDELITY)</span>
+                    <span className="text-[9px] text-purple-300 bg-purple-400/10 border border-purple-400/20 px-1.5 py-0.2 rounded font-bold uppercase">RENDER HD</span>
+                  </label>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {(['low', 'medium', 'high', 'ultra'] as const).map((fid) => (
+                      <button
+                        key={fid}
+                        onClick={() => onChangeSettings({ ...settings, traceFidelity: fid })}
+                        className={`text-[9px] font-mono leading-tight py-2.5 rounded-xl text-center transition-all cursor-pointer border capitalize ${
+                          settings.traceFidelity === fid
+                            ? 'bg-purple-500/20 text-purple-300 border-purple-400/40 font-bold shadow-[0_0_12px_rgba(168,85,247,0.15)]'
+                            : 'bg-white/5 text-gray-400 border-white/5 hover:border-white/12'
+                        }`}
+                        id={`trace-fid-${fid}`}
+                      >
+                        {fid === 'low' ? 'rendah' : fid === 'medium' ? 'sedang' : fid === 'high' ? 'tinggi' : 'ultra'}
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-[9px] text-gray-500 block font-normal leading-relaxed">
+                    Pilihan detail Ultra atau Tinggi memproses bentuk asli secara halus tanpa menyisakan gerigi tangga kasar.
+                  </span>
+                </div>
+
+                {/* Sub-pixel organic smoothing toggle */}
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="trace-smoothing"
+                    checked={settings.traceSmoothing}
+                    onChange={(e) => onChangeSettings({ ...settings, traceSmoothing: e.target.checked })}
+                    className="rounded bg-white/5 border-white/15 text-purple-400 focus:ring-purple-500/30 w-4 h-4 cursor-pointer"
+                  />
+                  <label htmlFor="trace-smoothing" className="text-xs text-gray-400 font-mono select-none cursor-pointer">
+                    Aktifkan penghalusan lekukan kurva vektor organik adaptif
+                  </label>
+                </div>
+
+              </div>
 
             </div>
           )}
@@ -336,11 +510,11 @@ export default function AdjustmentPanel({
               {isProcessing ? (
                 <>
                   <div className="w-5 h-5 border-t-2 border-r-2 border-cyan-400 rounded-full animate-spin" />
-                  PROCESSING TRANSLATIONS...
+                  MENGONVERSI GAMBAR...
                 </>
               ) : (
                 <>
-                  INITIALIZE PROCESS ({filesCount} {filesCount === 1 ? 'file' : 'files'})
+                  MULAI PROSES KONVERSI ({filesCount} {filesCount === 1 ? 'file' : 'file'})
                   <ChevronRight className="w-4.5 h-4.5 text-white" />
                 </>
               )}
