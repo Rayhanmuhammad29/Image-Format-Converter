@@ -85,11 +85,11 @@ export default function BatchList({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
-                  className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/2 hover:bg-white/5 hover:border-white/15 transition-all duration-300"
+                  className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/2 hover:bg-white/5 hover:border-white/15 transition-all duration-300 gap-4 overflow-hidden"
                   id={`queue-item-${file.id}`}
                 >
                   {/* Left side info / Name metadata */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 w-full md:w-auto">
                     
                     {/* Miniature Thumbnail */}
                     <div className="relative w-12 h-12 rounded-xl bg-slate-900 border border-white/10 overflow-hidden flex-shrink-0">
@@ -101,12 +101,12 @@ export default function BatchList({
                       />
                     </div>
 
-                    <div className="min-w-0">
-                      <h5 className="text-sm font-sans font-bold text-white truncate max-w-xs md:max-w-md">
+                    <div className="min-w-0 flex-1">
+                      <h5 className="text-sm font-sans font-bold text-white truncate max-w-[150px] sm:max-w-[280px] md:max-w-xs lg:max-w-md">
                         {file.name}
                       </h5>
                       
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
                         {/* Original size */}
                         <span className="text-[10px] font-mono text-gray-400">
                           {formatBytes(file.size)}
@@ -126,15 +126,15 @@ export default function BatchList({
                   </div>
 
                   {/* Transition State / Performance markers */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 sm:mt-0 ml-15 sm:ml-0">
+                  <div className="flex flex-row items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t border-white/5 md:border-t-0 pt-3 md:pt-0 pl-[60px] md:pl-0">
                     
                     {/* Status Indicator / Conversion output specs */}
                     {isSuccess && result && (
-                      <div className="flex items-center gap-2" id={`success-badge-${file.id}`}>
-                        <ArrowRight className="w-3.5 h-3.5 text-cyan-400 hidden sm:block" />
+                      <div className="flex items-center gap-2 min-w-0" id={`success-badge-${file.id}`}>
+                        <ArrowRight className="w-3.5 h-3.5 text-cyan-400 hidden md:block" />
                         
-                        <div className="text-left sm:text-right">
-                          <div className="flex items-center gap-1.5">
+                        <div className="text-left md:text-right min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wide">
                               {result.format.toUpperCase()}
                             </span>
@@ -143,7 +143,7 @@ export default function BatchList({
                             </span>
                           </div>
                           
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className="text-[10px] font-mono text-gray-400 font-medium">
                               {formatBytes(result.size)}
                             </span>
@@ -165,9 +165,9 @@ export default function BatchList({
                     )}
 
                     {isProcessing && (
-                      <div className="flex items-center gap-2 text-cyan-300 text-xs font-mono font-semibold" id={`processing-badge-${file.id}`}>
-                        <Loader2 className="w-4 h-4 text-cyan-455 animate-spin" />
-                        <span>Mengonversi piksel...</span>
+                      <div className="flex items-center gap-2 text-cyan-300 text-xs font-mono font-semibold animate-pulse" id={`processing-badge-${file.id}`}>
+                        <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
+                        <span>Mengonversi...</span>
                       </div>
                     )}
 
@@ -179,11 +179,13 @@ export default function BatchList({
 
                     {isError && (
                       <div className="flex items-center gap-1.5 text-xs font-mono text-rose-300 bg-rose-500/10 border border-rose-500/35 px-2.5 py-1 rounded-xl" id={`error-badge-${file.id}`}>
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-300" />
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-300 animate-bounce" />
                         <span>Gagal</span>
                       </div>
-                    )}                    {/* Operational Action Buttons */}
-                    <div className="flex items-center gap-2">
+                    )}
+
+                    {/* Operational Action Buttons */}
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-auto md:ml-0">
                       {/* Preview comparison (completed rasters/vectors) */}
                       {isSuccess && result && (
                         <button
@@ -200,7 +202,7 @@ export default function BatchList({
                       {isSuccess && result && (
                         <button
                           onClick={() => onDownload(file.id)}
-                          className="p-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-105 active:scale-95 transition-all text-white font-bold cursor-pointer shadow-lg"
+                          className="p-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-105 active:scale-95 transition-all text-white font-bold cursor-pointer shadow-lg hover:shadow-cyan-500/20"
                           title="Unduh aset konversi"
                           id={`download-complt-btn-${file.id}`}
                         >

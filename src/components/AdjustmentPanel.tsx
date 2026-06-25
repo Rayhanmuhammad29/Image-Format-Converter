@@ -84,183 +84,183 @@ export default function AdjustmentPanel({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        {/* Dimensions Configuration Option */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-mono font-bold text-gray-300 flex items-center justify-between">
-              <span>DIMENSI OUTPUT GAMBAR</span>
-              <span className="text-[10px] text-gray-500 font-normal">Lebar &bull; Tinggi (piksel)</span>
-            </label>
-            <div className="grid grid-cols-2 gap-3 mt-2">
-              <div>
-                <span className="text-[10px] font-mono text-gray-400 block mb-1">Lebar Target</span>
-                <input
-                  type="text"
-                  value={widthInput}
-                  onChange={(e) => handleWidthChange(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
-                  placeholder="asli"
-                  id="target-width-field"
-                />
+        {/* Dimensions Configuration Option (Only for raster formats; hidden for vectors) */}
+        {!isVector ? (
+          <div className="space-y-4" id="raster-dimension-controls">
+            <div>
+              <label className="text-xs font-mono font-bold text-gray-300 flex items-center justify-between">
+                <span>DIMENSI OUTPUT GAMBAR</span>
+                <span className="text-[10px] text-gray-500 font-normal">Lebar &bull; Tinggi (piksel)</span>
+              </label>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <div>
+                  <span className="text-[10px] font-mono text-gray-400 block mb-1">Lebar Target</span>
+                  <input
+                    type="text"
+                    value={widthInput}
+                    onChange={(e) => handleWidthChange(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
+                    placeholder="asli"
+                    id="target-width-field"
+                  />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-gray-400 block mb-1">Tinggi Target</span>
+                  <input
+                    type="text"
+                    value={heightInput}
+                    onChange={(e) => handleHeightChange(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
+                    placeholder="asli"
+                    id="target-height-field"
+                  />
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-mono text-gray-400 block mb-1">Tinggi Target</span>
-                <input
-                  type="text"
-                  value={heightInput}
-                  onChange={(e) => handleHeightChange(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-cyan-400 focus:outline-none transition-all shadow-inner"
-                  placeholder="asli"
-                  id="target-height-field"
-                />
+            </div>
+
+            {/* Quick Res Presets */}
+            <div>
+              <span className="text-[10px] font-mono text-gray-400 block mb-1.5">Preset Konfigurasi Skala (Paling Kecil ke Terbesar)</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={setOriginalSize}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === -1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-original"
+                >
+                  Ukuran Asli
+                </button>
+                <button
+                  onClick={() => setResPreset(512, 512)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 512 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-512x512"
+                >
+                  512px (Ikon Kecil)
+                </button>
+                <button
+                  onClick={() => setResPreset(800, 800)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 800 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-800x800"
+                >
+                  800px (Kotak Sedang)
+                </button>
+                <button
+                  onClick={() => setResPreset(1280, 720)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 1280 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-720p"
+                >
+                  1280×720 (HD 720p)
+                </button>
+                <button
+                  onClick={() => setResPreset(1920, 1080)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 1920 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-1080p"
+                >
+                  1920×1080 (Full HD)
+                </button>
+                <button
+                  onClick={() => setResPreset(2560, 1440)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 2560 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-2k"
+                >
+                  2560×1440 (2K QHD)
+                </button>
+                <button
+                  onClick={() => setResPreset(3840, 2160)}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.width === 3840 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="preset-4k"
+                >
+                  3840×2160 (4K UHD)
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Quick Res Presets */}
-          <div>
-            <span className="text-[10px] font-mono text-gray-400 block mb-1.5">Preset Konfigurasi Skala (Paling Kecil ke Terbesar)</span>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={setOriginalSize}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === -1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-original"
-              >
-                Ukuran Asli
-              </button>
-              <button
-                onClick={() => setResPreset(512, 512)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 512 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-512x512"
-              >
-                512px (Ikon Kecil)
-              </button>
-              <button
-                onClick={() => setResPreset(800, 800)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 800 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-800x800"
-              >
-                800px (Kotak Sedang)
-              </button>
-              <button
-                onClick={() => setResPreset(1280, 720)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 1280 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-720p"
-              >
-                1280×720 (HD 720p)
-              </button>
-              <button
-                onClick={() => setResPreset(1920, 1080)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 1920 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-1080p"
-              >
-                1920×1080 (Full HD)
-              </button>
-              <button
-                onClick={() => setResPreset(2560, 1440)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 2560 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-2k"
-              >
-                2560×1440 (2K QHD)
-              </button>
-              <button
-                onClick={() => setResPreset(3840, 2160)}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.width === 3840 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-semibold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="preset-4k"
-              >
-                3840×2160 (4K UHD)
-              </button>
+            {/* Scale Multiplier Feature for No-distortion Super-Resolution upscales */}
+            <div>
+              <span className="text-[10px] font-mono text-gray-400 block mb-1.5 font-bold uppercase tracking-wide">Faktor Perbesaran Piksel (Upscaling Pintar)</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    onChangeSettings({ ...settings, scale: 1, width: -1, height: -1 });
+                    setWidthInput('original');
+                    setHeightInput('original');
+                  }}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    (settings.scale === 1 || !settings.scale) && settings.width === -1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="scale-1x"
+                >
+                  1x (Ukuran Asli)
+                </button>
+                <button
+                  onClick={() => {
+                    onChangeSettings({ ...settings, scale: 1.5, width: -1, height: -1 });
+                    setWidthInput('1.5x');
+                    setHeightInput('1.5x');
+                  }}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.scale === 1.5 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="scale-1.5x"
+                >
+                  1.5x HD
+                </button>
+                <button
+                  onClick={() => {
+                    onChangeSettings({ ...settings, scale: 2, width: -1, height: -1 });
+                    setWidthInput('2x');
+                    setHeightInput('2x');
+                  }}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.scale === 2 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="scale-2x"
+                >
+                  2x Super-Res (Tajam)
+                </button>
+                <button
+                  onClick={() => {
+                    onChangeSettings({ ...settings, scale: 4, width: -1, height: -1 });
+                    setWidthInput('4x');
+                    setHeightInput('4x');
+                  }}
+                  className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    settings.scale === 4 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
+                  }`}
+                  id="scale-4x"
+                >
+                  4x Ultra-Res (Maksimalkan Detail)
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Scale Multiplier Feature for No-distortion Super-Resolution upscales */}
-          <div>
-            <span className="text-[10px] font-mono text-gray-400 block mb-1.5 font-bold uppercase tracking-wide">Faktor Perbesaran Piksel (Upscaling Pintar)</span>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => {
-                  onChangeSettings({ ...settings, scale: 1, width: -1, height: -1 });
-                  setWidthInput('original');
-                  setHeightInput('original');
-                }}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  (settings.scale === 1 || !settings.scale) && settings.width === -1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="scale-1x"
-              >
-                1x (Ukuran Asli)
-              </button>
-              <button
-                onClick={() => {
-                  onChangeSettings({ ...settings, scale: 1.5, width: -1, height: -1 });
-                  setWidthInput('1.5x');
-                  setHeightInput('1.5x');
-                }}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.scale === 1.5 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="scale-1.5x"
-              >
-                1.5x HD
-              </button>
-              <button
-                onClick={() => {
-                  onChangeSettings({ ...settings, scale: 2, width: -1, height: -1 });
-                  setWidthInput('2x');
-                  setHeightInput('2x');
-                }}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.scale === 2 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="scale-2x"
-              >
-                2x Super-Res (Tajam)
-              </button>
-              <button
-                onClick={() => {
-                  onChangeSettings({ ...settings, scale: 4, width: -1, height: -1 });
-                  setWidthInput('4x');
-                  setHeightInput('4x');
-                }}
-                className={`text-[10px] font-mono px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  settings.scale === 4 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40 font-bold' : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                }`}
-                id="scale-4x"
-              >
-                4x Ultra-Res (Maksimalkan Detail)
-              </button>
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="lock-aspect"
+                checked={settings.keepAspectRatio}
+                onChange={(e) => onChangeSettings({ ...settings, keepAspectRatio: e.target.checked })}
+                className="rounded bg-white/5 border-white/15 text-cyan-400 focus:ring-cyan-500/30 w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="lock-aspect" className="text-xs text-gray-400 font-mono select-none cursor-pointer">
+                Kunci rasio aspek file sumber (proporsi stabil)
+              </label>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="checkbox"
-              id="lock-aspect"
-              checked={settings.keepAspectRatio}
-              onChange={(e) => onChangeSettings({ ...settings, keepAspectRatio: e.target.checked })}
-              className="rounded bg-white/5 border-white/15 text-cyan-400 focus:ring-cyan-500/30 w-4 h-4 cursor-pointer"
-            />
-            <label htmlFor="lock-aspect" className="text-xs text-gray-400 font-mono select-none cursor-pointer">
-              Kunci rasio aspek file sumber (proporsi stabil)
-            </label>
-          </div>
-
-          {/* Upscaling Engine Controls (Visible only for raster outputs) */}
-          {!isVector && (
+            {/* Upscaling Engine Controls (Visible only for raster outputs) */}
             <div className="pt-4 border-t border-white/5 space-y-4">
               <div>
                 <label className="text-xs font-mono font-bold text-gray-300 block mb-1.5 flex items-center justify-between">
@@ -326,8 +326,43 @@ export default function AdjustmentPanel({
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="space-y-4 bg-cyan-950/20 border border-cyan-500/20 rounded-2xl p-5 flex flex-col justify-between h-full" id="vector-automatic-info">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Grid className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <span className="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">Auto-Optimasi Vektor Aktif</span>
+              </div>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Format vektor (<strong className="text-cyan-400 font-mono">SVG / EPS</strong>) dirancang menggunakan rumus matematika koordinat, bukan piksel statis. Gambar hasil konversi bebas diperbesar tak terbatas tanpa khawatir pecah atau buram.
+              </p>
+              
+              <div className="mt-4 space-y-3">
+                <div className="flex gap-2.5 items-start">
+                  <span className="text-cyan-400 font-mono text-xs select-none mt-0.5">&bull;</span>
+                  <p className="text-[11px] text-gray-400 leading-relaxed">
+                    <strong className="text-gray-200 block mb-0.5">Skala & Resolusi Otomatis</strong>
+                    Sistem otomatis menghitung detail kontur lekukan paling tajam secara cerdas tanpa perlu pengaturan resolusi manual yang rumit.
+                  </p>
+                </div>
+                
+                <div className="flex gap-2.5 items-start">
+                  <span className="text-cyan-400 font-mono text-xs select-none mt-0.5">&bull;</span>
+                  <p className="text-[11px] text-gray-400 leading-relaxed">
+                    <strong className="text-gray-200 block mb-0.5">Penghapusan Background Otomatis</strong>
+                    Sistem mendeteksi dan menghapus warna latar belakang polos dominan (seperti background putih pada logo/bendera) agar hasil tracing otomatis transparan.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-cyan-500/10 flex items-center justify-between text-[10px] font-mono text-cyan-400/80">
+              <span>TINGKAT DETAIL: ULTRA (OTOMATIS)</span>
+              <span>Vector Engine v3.0</span>
+            </div>
+          </div>
+        )}
 
         {/* Dynamic Section: Quality or Vector Tracing Panel */}
         <div className="border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-6 flex flex-col justify-between">
@@ -366,130 +401,41 @@ export default function AdjustmentPanel({
           )}
 
           {isVector && (
-            <div className="space-y-4" id="vector-tracing-controls">
-              
-              {/* Trace Mode Selection */}
+            <div className="space-y-5 bg-purple-950/20 border border-purple-500/20 rounded-2xl p-5" id="vector-tracing-controls">
               <div>
-                <label className="text-xs font-mono font-bold text-gray-300 block mb-1.5">
-                  MODE KUANTISASI WARNA VEKTOR
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => onChangeSettings({ ...settings, traceColorMode: 'color' })}
-                    className={`text-[10px] font-mono font-bold py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      settings.traceColorMode === 'color'
-                        ? 'bg-purple-500/20 text-purple-400 border border-purple-400/40'
-                        : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                    }`}
-                    id="trace-color"
-                  >
-                    <Grid className="w-3.5 h-3.5" />
-                    Jalur Palet Warna
-                  </button>
-                  <button
-                    onClick={() => onChangeSettings({ ...settings, traceColorMode: 'monochrome' })}
-                    className={`text-[10px] font-mono font-bold py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      settings.traceColorMode === 'monochrome'
-                        ? 'bg-purple-500/20 text-purple-400 border border-purple-400/40'
-                        : 'bg-white/5 text-gray-400 border border-white/5 hover:border-white/15'
-                    }`}
-                    id="trace-mono"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    Siluet Monokrom
-                  </button>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[10px] text-purple-300 bg-purple-400/10 border border-purple-400/25 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    Spesifikasi Hasil Optimal (Auto-Selected)
+                  </span>
+                </div>
+                <h5 className="text-sm font-bold text-white mb-2 font-sans flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping" />
+                  Mode Vektor Kualitas Tertinggi Aktif
+                </h5>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Semua pengaturan fidelity, kedalaman warna, dan kehalusan kurva telah dioptimalkan secara otomatis ke tingkat premium untuk hasil konversi terbaik.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-3 border-t border-purple-500/15">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-gray-400">Tingkat Detail (Fidelity)</span>
+                  <span className="text-purple-300 font-bold bg-purple-400/10 px-2 py-0.5 rounded">Ultra-HD Tracing</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-gray-400">Skema & Kedalaman Warna</span>
+                  <span className="text-purple-300 font-bold bg-purple-400/10 px-2 py-0.5 rounded">Palet Adaptif Maksimal</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-gray-400">Interpolaritas Kurva</span>
+                  <span className="text-purple-300 font-bold bg-purple-400/10 px-2 py-0.5 rounded">Sub-pixel Organic Smooth</span>
                 </div>
               </div>
 
-              {/* Slider depends on mode */}
-              {settings.traceColorMode === 'color' ? (
-                <div>
-                  <div className="flex justify-between items-center text-xs font-mono text-gray-300">
-                    <span>WARNA PALET MAKSIMUM</span>
-                    <span className="text-purple-300 font-bold">{settings.traceColorsCount} warna</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="2"
-                    max="64"
-                    step="1"
-                    value={settings.traceColorsCount}
-                    onChange={(e) => onChangeSettings({ ...settings, traceColorsCount: parseInt(e.target.value, 10) })}
-                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-400 mt-2"
-                    id="vector-layers-slider"
-                  />
-                  <span className="text-[10px] text-gray-500 block mt-1 font-normal">
-                    Jumlah warna lebih banyak (hingga 64) menghasilkan detail warna vektor yang lebih kaya dan berlesung halus (tidak pecah).
-                  </span>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex justify-between items-center text-xs font-mono text-gray-300">
-                    <span>AMBANG BATAS SILUET (THRESHOLD)</span>
-                    <span className="text-purple-300 font-bold">{settings.traceThreshold}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="240"
-                    step="5"
-                    value={settings.traceThreshold}
-                    onChange={(e) => onChangeSettings({ ...settings, traceThreshold: parseInt(e.target.value, 10) })}
-                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-400 mt-2"
-                    id="vector-threshold-slider"
-                  />
-                  <span className="text-[10px] text-gray-500 block mt-1 font-normal">
-                    Ambang batas yang lebih tinggi menggelapkan jalur bayangan monokrom, mempertahankan detail kontur halus.
-                  </span>
-                </div>
-              )}
-
-              {/* Premium Tracing Options: Fidelity & Smoothing */}
-              <div className="pt-4 border-t border-white/5 space-y-4">
-                
-                {/* Tracing Fidelity (Dynamic input resolution map) */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-mono font-bold text-gray-300 block flex items-center justify-between">
-                    <span>KETEPATAN DETAIL PENELUSURAN (FIDELITY)</span>
-                    <span className="text-[9px] text-purple-300 bg-purple-400/10 border border-purple-400/20 px-1.5 py-0.2 rounded font-bold uppercase">RENDER HD</span>
-                  </label>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {(['low', 'medium', 'high', 'ultra'] as const).map((fid) => (
-                      <button
-                        key={fid}
-                        onClick={() => onChangeSettings({ ...settings, traceFidelity: fid })}
-                        className={`text-[9px] font-mono leading-tight py-2.5 rounded-xl text-center transition-all cursor-pointer border capitalize ${
-                          settings.traceFidelity === fid
-                            ? 'bg-purple-500/20 text-purple-300 border-purple-400/40 font-bold shadow-[0_0_12px_rgba(168,85,247,0.15)]'
-                            : 'bg-white/5 text-gray-400 border-white/5 hover:border-white/12'
-                        }`}
-                        id={`trace-fid-${fid}`}
-                      >
-                        {fid === 'low' ? 'rendah' : fid === 'medium' ? 'sedang' : fid === 'high' ? 'tinggi' : 'ultra'}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-[9px] text-gray-500 block font-normal leading-relaxed">
-                    Pilihan detail Ultra atau Tinggi memproses bentuk asli secara halus tanpa menyisakan gerigi tangga kasar.
-                  </span>
-                </div>
-
-                {/* Sub-pixel organic smoothing toggle */}
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="trace-smoothing"
-                    checked={settings.traceSmoothing}
-                    onChange={(e) => onChangeSettings({ ...settings, traceSmoothing: e.target.checked })}
-                    className="rounded bg-white/5 border-white/15 text-purple-400 focus:ring-purple-500/30 w-4 h-4 cursor-pointer"
-                  />
-                  <label htmlFor="trace-smoothing" className="text-xs text-gray-400 font-mono select-none cursor-pointer">
-                    Aktifkan penghalusan lekukan kurva vektor organik adaptif
-                  </label>
-                </div>
-
+              <div className="p-3 bg-purple-500/5 rounded-xl border border-purple-500/10 text-[10px] text-gray-400 leading-relaxed">
+                <span className="font-bold text-purple-300 uppercase block mb-1">💡 INFO VEKTORISASI</span>
+                Aset SVG / EPS hasil konversi tidak akan pernah pecah walau diperbesar berkali-kali untuk cetak banner, kaos, atau mockup desain profesional.
               </div>
-
             </div>
           )}
 

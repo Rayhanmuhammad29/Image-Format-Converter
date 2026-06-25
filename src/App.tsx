@@ -227,6 +227,12 @@ export default function App() {
                 ctx.imageSmoothingQuality = 'high';
               }
 
+              // JPEG format standard: fill with solid white background before drawing transparent images
+              if (settings.format === 'jpeg') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, targetWidth, targetHeight);
+              }
+
               // Perform raw stretch/scaling onto target dimensions
               ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
