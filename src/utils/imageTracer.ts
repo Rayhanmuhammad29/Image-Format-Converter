@@ -36,8 +36,8 @@ export async function traceImageToVector(
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
-        // High-resolution canvas up to 2048px to keep pixel-perfect detail
-        let maxResolution = 2048;
+        // Safe, highly detailed sweet-spot resolution for crisp tracing (1000px)
+        let maxResolution = 1000;
 
         let width = img.naturalWidth || img.width;
         let height = img.naturalHeight || img.height;
@@ -64,7 +64,7 @@ export async function traceImageToVector(
           throw new Error('Could not obtain Canvas 2D Context');
         }
 
-        // Draw image onto high-resolution canvas
+        // Draw image onto canvas
         ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
         const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
         const data = imgData.data;
@@ -148,143 +148,107 @@ export async function traceImageToVector(
           ctx.putImageData(imgData, 0, 0);
         }
 
-        // --- 3. Generate Pristine Lossless Embedded SVG ---
-        // This guarantees 100% identical detail, zero blur, perfect gradients,
-        // and background transparently removed as requested!
-        const pngDataUrl = canvas.toDataURL('image/png');
-        const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${targetWidth} ${targetHeight}" width="100%" height="100%">
-  <image href="${pngDataUrl}" width="${targetWidth}" height="${targetHeight}" />
-</svg>`;
+        // --- 3. Generate Standard, High-Fidelity Pure Vector Paths (Compliant with Adobe Stock / Illustrator) ---
+        const traceOptions: any = {
+          ltres: 0.15,         // Extremely precise line error threshold
+          qtres: 0.15,         // Extremely precise spline error threshold
+          pathomit: 2,         // Keep fine flower/foliage details, filter micro-noise
+          colorscount: 32,     // 32-color high quality palette for rich gradients and professional colors
+          mincolorratio: 0.0,  // Keep even microscopic color highlights intact
+          colorquantcycles: 3, // High color accuracy quantization cycles
+          blurradius: 0.0,     // Zero pre-blur to keep edges razor-sharp
+          viewbox: true        // Correct viewBox scaling
+        };
 
-        // --- 4. Generate Path Tracing specifically for Mathematical Curves (EPS File) ---
-        // To prevent blocking the main thread and freezing the page, we use a lightweight
-        // optimized resolution for tracing, then scale the coordinate paths back up!
-        const traceMaxRes = 450;
-        let traceWidth = targetWidth;
-        let traceHeight = targetHeight;
-        if (targetWidth > traceMaxRes || targetHeight > traceMaxRes) {
-          if (targetWidth > targetHeight) {
-            traceWidth = traceMaxRes;
-            traceHeight = Math.round((targetHeight * traceMaxRes) / targetWidth);
-          } else {
-            traceHeight = traceMaxRes;
-            traceWidth = Math.round((targetWidth * traceMaxRes) / targetHeight);
-          }
-        }
+        // Standard path-based SVG tracing using the library
+        const svgStr = ImageTracer.imagedataToSVG(imgData, traceOptions);
 
-        const traceCanvas = document.createElement('canvas');
-        traceCanvas.width = traceWidth;
-        traceCanvas.height = traceHeight;
-        const traceCtx = traceCanvas.getContext('2d');
-        
+        // --- 4. Generate EPS Mathematical Curves from the exact same high-quality paths ---
         let epsPathsStr = '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgStr, 'image/svg+xml');
+        const svgPaths = doc.querySelectorAll('path');
 
-        if (traceCtx) {
-          traceCtx.drawImage(canvas, 0, 0, traceWidth, traceHeight);
-          const traceImgData = traceCtx.getImageData(0, 0, traceWidth, traceHeight);
+        svgPaths.forEach(pathEl => {
+          const fill = pathEl.getAttribute('fill') || '#000000';
+          const d = pathEl.getAttribute('d') || '';
 
-          const traceOptions: any = {
-            ltres: 1.0,         // Safe, fast line threshold
-            qtres: 1.0,         // Smooth curves
-            pathomit: 8,        // Filter out microscopic path noise
-            colorscount: 16,    // Balanced palette for fast calculations
-            mincolorratio: 0.005,
-            colorquantcycles: 2,
-            blurradius: 0.3,
-            viewbox: true
-          };
+          if (fill === 'none') return;
 
-          // Fast tracing that takes < 50ms and never freezes the page
-          const tracedSvgStr = ImageTracer.imagedataToSVG(traceImgData, traceOptions);
-
-          const scaleX = targetWidth / traceWidth;
-          const scaleY = targetHeight / traceHeight;
-
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(tracedSvgStr, 'image/svg+xml');
-          const svgPaths = doc.querySelectorAll('path');
-
-          svgPaths.forEach(pathEl => {
-            const fill = pathEl.getAttribute('fill') || '#000000';
-            const d = pathEl.getAttribute('d') || '';
-
-            if (fill === 'none') return;
-
-            let r = '0.000', g = '0.000', b = '0.000';
-            if (fill.startsWith('#')) {
-              const hex = fill.replace('#', '');
-              const rHex = parseInt(hex.substring(0, 2), 16) || 0;
-              const gHex = parseInt(hex.substring(2, 4), 16) || 0;
-              const bHex = parseInt(hex.substring(4, 6), 16) || 0;
-              r = (rHex / 255).toFixed(3);
-              g = (gHex / 255).toFixed(3);
-              b = (bHex / 255).toFixed(3);
-            } else if (fill.startsWith('rgb')) {
-              const rgbMatch = fill.match(/\d+/g);
-              if (rgbMatch && rgbMatch.length >= 3) {
-                r = (parseInt(rgbMatch[0]) / 255).toFixed(3);
-                g = (parseInt(rgbMatch[1]) / 255).toFixed(3);
-                b = (parseInt(rgbMatch[2]) / 255).toFixed(3);
-              }
+          let r = '0.000', g = '0.000', b = '0.000';
+          if (fill.startsWith('#')) {
+            const hex = fill.replace('#', '');
+            const rHex = parseInt(hex.substring(0, 2), 16) || 0;
+            const gHex = parseInt(hex.substring(2, 4), 16) || 0;
+            const bHex = parseInt(hex.substring(4, 6), 16) || 0;
+            r = (rHex / 255).toFixed(3);
+            g = (gHex / 255).toFixed(3);
+            b = (bHex / 255).toFixed(3);
+          } else if (fill.startsWith('rgb')) {
+            const rgbMatch = fill.match(/\d+/g);
+            if (rgbMatch && rgbMatch.length >= 3) {
+              r = (parseInt(rgbMatch[0]) / 255).toFixed(3);
+              g = (parseInt(rgbMatch[1]) / 255).toFixed(3);
+              b = (parseInt(rgbMatch[2]) / 255).toFixed(3);
             }
+          }
 
-            epsPathsStr += `\n% Vector path colored with ${fill}\n`;
-            epsPathsStr += `${r} ${g} ${b} setrgbcolor\n`;
-            epsPathsStr += `newpath\n`;
+          epsPathsStr += `\n% Vector path colored with ${fill}\n`;
+          epsPathsStr += `${r} ${g} ${b} setrgbcolor\n`;
+          epsPathsStr += `newpath\n`;
 
-            const instructions = parseSvgPath(d);
-            let currentX = 0;
-            let currentY = 0;
+          const instructions = parseSvgPath(d);
+          let currentX = 0;
+          let currentY = 0;
 
-            instructions.forEach(inst => {
-              const { command, args } = inst;
-              const cmd = command.toUpperCase();
+          instructions.forEach(inst => {
+            const { command, args } = inst;
+            const cmd = command.toUpperCase();
 
-              if (cmd === 'M' && args.length >= 2) {
-                currentX = args[0] * scaleX;
-                currentY = args[1] * scaleY;
-                const psY = targetHeight - currentY;
-                epsPathsStr += `${currentX.toFixed(2)} ${psY.toFixed(2)} moveto\n`;
-              } else if (cmd === 'L' && args.length >= 2) {
-                for (let j = 0; j < args.length; j += 2) {
-                  if (j + 1 < args.length) {
-                    currentX = args[j] * scaleX;
-                    currentY = args[j + 1] * scaleY;
-                    const psY = targetHeight - currentY;
-                    epsPathsStr += `${currentX.toFixed(2)} ${psY.toFixed(2)} lineto\n`;
-                  }
+            if (cmd === 'M' && args.length >= 2) {
+              currentX = args[0];
+              currentY = args[1];
+              const psY = targetHeight - currentY;
+              epsPathsStr += `${currentX.toFixed(2)} ${psY.toFixed(2)} moveto\n`;
+            } else if (cmd === 'L' && args.length >= 2) {
+              for (let j = 0; j < args.length; j += 2) {
+                if (j + 1 < args.length) {
+                  currentX = args[j];
+                  currentY = args[j + 1];
+                  const psY = targetHeight - currentY;
+                  epsPathsStr += `${currentX.toFixed(2)} ${psY.toFixed(2)} lineto\n`;
                 }
-              } else if (cmd === 'Q' && args.length >= 4) {
-                for (let j = 0; j < args.length; j += 4) {
-                  if (j + 3 < args.length) {
-                    const x1 = args[j] * scaleX;
-                    const y1 = args[j + 1] * scaleY;
-                    const x = args[j + 2] * scaleX;
-                    const y = args[j + 3] * scaleY;
-
-                    const cx1 = currentX + (2 / 3) * (x1 - currentX);
-                    const cy1 = currentY + (2 / 3) * (y1 - currentY);
-                    const cx2 = x + (2 / 3) * (x1 - x);
-                    const cy2 = y + (2 / 3) * (y1 - y);
-
-                    const psCy1 = targetHeight - cy1;
-                    const psCy2 = targetHeight - cy2;
-                    const psY = targetHeight - y;
-
-                    epsPathsStr += `${cx1.toFixed(2)} ${psCy1.toFixed(2)} ${cx2.toFixed(2)} ${psCy2.toFixed(2)} ${x.toFixed(2)} ${psY.toFixed(2)} curveto\n`;
-
-                    currentX = x;
-                    currentY = y;
-                  }
-                }
-              } else if (cmd === 'Z') {
-                epsPathsStr += `closepath\n`;
               }
-            });
+            } else if (cmd === 'Q' && args.length >= 4) {
+              for (let j = 0; j < args.length; j += 4) {
+                if (j + 3 < args.length) {
+                  const x1 = args[j];
+                  const y1 = args[j + 1];
+                  const x = args[j + 2];
+                  const y = args[j + 3];
 
-            epsPathsStr += `fill\n`;
+                  const cx1 = currentX + (2 / 3) * (x1 - currentX);
+                  const cy1 = currentY + (2 / 3) * (y1 - currentY);
+                  const cx2 = x + (2 / 3) * (x1 - x);
+                  const cy2 = y + (2 / 3) * (y1 - y);
+
+                  const psCy1 = targetHeight - cy1;
+                  const psCy2 = targetHeight - cy2;
+                  const psY = targetHeight - y;
+
+                  epsPathsStr += `${cx1.toFixed(2)} ${psCy1.toFixed(2)} ${cx2.toFixed(2)} ${psCy2.toFixed(2)} ${x.toFixed(2)} ${psY.toFixed(2)} curveto\n`;
+
+                  currentX = x;
+                  currentY = y;
+                }
+              }
+            } else if (cmd === 'Z') {
+              epsPathsStr += `closepath\n`;
+            }
           });
-        }
+
+          epsPathsStr += `fill\n`;
+        });
 
         const epsStr = `%!PS-Adobe-3.0 EPSF-3.0
 %%Creator: PixelShift Mathematical Curve Vectorizer
